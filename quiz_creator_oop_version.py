@@ -215,5 +215,25 @@ class QuizCreatorWindow(BaseWindow):
             messagebox.showerror("Error", f"Failed to save: {e}")
 
 
+class MainWindow(BaseWindow):
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title("Quiz App Start Menu")
+        self.root.geometry("400x300")
+        self.root.configure(bg="#f0f0f0")
+
+        tk.Label(self.root, text="Welcome to the Quiz App", font=("Arial", 16), bg="#f0f0f0").pack(pady=20)
+        self.styled_button(self.root, "Take Quiz", self.open_taker).pack(pady=10)
+        self.styled_button(self.root, "Create Quiz", self.open_creator, bg="#2196F3").pack(pady=10)
+
+        self.root.mainloop()
+
+    def open_taker(self):
+        QuizTakerWindow(self.root)
+
+    def open_creator(self):
+        QuizCreatorWindow(self.root)
+
+
 if __name__ == "__main__":
     MainWindow()
