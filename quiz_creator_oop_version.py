@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 
 class QuizCreatorWindow:
     def __init__(self, master):
@@ -8,6 +9,16 @@ class QuizCreatorWindow:
 
         self.entry_question = tk.Entry(self.window)
         self.entry_question.pack()
+
+        tk.Button(self.window, text="Save", command=self.save_question).pack()
+
+    def save_question(self):
+        question = self.entry_question.get()
+        if not question:
+            messagebox.showwarning("Warning", "Please enter a question.")
+            return
+        with open("quiz_data.txt", "a") as f:
+            f.write("Question: " + question + "\n")
 
 class MainWindow:
     def __init__(self):
