@@ -48,3 +48,24 @@ d. Death
 Correct answer: d
 ----------------------------------------
 
+Question: What is the Capital of France?
+a. Rome
+b. Italy
+c. Manila
+d. Berlin
+Answer: option_b
+----------------------------------------
+Question: The more you take, the more you leave behind. What are they?
+a. Foot
+b. Memories
+c. Crums
+d. Lies
+Answer: option_b
+----------------------------------------
+Question: What gets wetter the more it dries?
+a. Sponge
+b. Towel
+c. Mop
+d. Rain
+Answer: option_b
+----------------------------------------
