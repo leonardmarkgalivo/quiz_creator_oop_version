@@ -1,5 +1,14 @@
 import tkinter as tk
 
+class QuizCreatorWindow:
+    def __init__(self, master):
+        self.window = tk.Toplevel(master)
+        self.window.title("Quiz Creator")
+        self.window.geometry("500x500")
+
+        self.entry_question = tk.Entry(self.window)
+        self.entry_question.pack()
+
 class MainWindow:
     def __init__(self):
         self.root = tk.Tk()
@@ -12,7 +21,7 @@ class MainWindow:
         self.root.mainloop()
 
     def open_creator(self):
-        pass
+        QuizCreatorWindow(self.root)
 
     def open_taker(self):
         pass
