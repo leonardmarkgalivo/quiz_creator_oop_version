@@ -83,3 +83,27 @@ class QuizTakerWindow(BaseWindow):
 
         self.current_index += 1
         self.window.after(500, self.show_question)
+
+
+class QuizCreatorWindow(BaseWindow):
+    def __init__(self, master):
+        self.window = tk.Toplevel(master)
+        self.window.title("Create Quiz")
+        self.window.geometry("500x600")
+        self.window.configure(bg="#f0f0f0")
+
+        self.entries = []
+        tk.Label(self.window, text="Enter your quiz question and choices", font=("Arial", 14), bg="#f0f0f0").pack(pady=10)
+
+        self.question_entry = self.labeled_entry(self.window, "Question:")
+        for label in ['Choice A:', 'Choice B:', 'Choice C:', 'Choice D:']:
+            self.entries.append(self.labeled_entry(self.window, label))
+
+        self.answer_entry = self.labeled_entry(self.window, "Correct answer (a/b/c/d):")
+
+        self.styled_button(self.window, "Save Question", self.save_question).pack(pady=10)
+        self.styled_button(self.window, "Close", self.window.destroy, bg="#f44336").pack(pady=5)
+
+
+if __name__ == "__main__":
+    MainWindow()
