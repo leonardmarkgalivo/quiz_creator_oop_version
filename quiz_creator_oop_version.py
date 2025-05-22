@@ -1,41 +1,85 @@
 import tkinter as tk
 from tkinter import messagebox
+import random
 
-class QuizCreatorWindow:
+# Base GUI Helper class
+class BaseWindow:
+    def labeled_entry(self, container, label_text):
+        tk.Label(container, text=label_text, font=("Arial", 12), bg="#f0f0f0").pack(pady=2)
+        entry = tk.Entry(container, width=50, font=("Arial", 12))
+        entry.pack(pady=2)
+        return entry
+
+    def styled_button(self, container, text, command, bg="#4CAF50"):
+        return tk.Button(container, text=text, command=command, font=("Arial", 12),
+                         bg=bg, fg="white", relief="raised")
+
+    def load_quiz_data(self):
+        try:
+            with open("quiz_data.txt", "r") as file:
+                blocks = file.read().split("-" * 40 + "\n")
+            questions = []
+            for block in blocks:
+                lines = block.strip().split("\n")
+                if len(lines) >= 6:
+                    question = lines[0][10:]
+                    choices = {k: lines[i][3:] for i, k in enumerate(['a', 'b', 'c', 'd'], start=1)}
+                    answer = lines[5][-1]
+                    questions.append((question, choices, answer))
+            return questions
+        except FileNotFoundError:
+            return None
+
+
+class QuizTakerWindow(BaseWindow):
     def __init__(self, master):
         self.window = tk.Toplevel(master)
-        self.window.title("Quiz Creator")
-        self.window.geometry("500x500")
+        self.window.title("Take the Quiz")
+        self.window.geometry("500x400")
+        self.window.configure(bg="#f0f0f0")
 
-        self.entry_question = tk.Entry(self.window)
-        self.entry_question.pack()
-
-        tk.Button(self.window, text="Save", command=self.save_question).pack()
-
-    def save_question(self):
-        question = self.entry_question.get()
-        if not question:
-            messagebox.showwarning("Warning", "Please enter a question.")
+        self.questions = self.load_quiz_data()
+        if not self.questions:
+            tk.Label(self.window, text="No questions found or file missing.", font=("Arial", 14), bg="#f0f0f0").pack(pady=20)
             return
-        with open("quiz_data.txt", "a") as f:
-            f.write("Question: " + question + "\n")
 
-class MainWindow:
-    def __init__(self):
-        self.root = tk.Tk()
-        self.root.title("Quiz App Start Menu")
-        self.root.geometry("400x300")
+        random.shuffle(self.questions)
+        self.current_index = 0
+        self.score = 0
+        self.show_question()
 
-        tk.Button(self.root, text="Create Quiz", command=self.open_creator).pack(pady=10)
-        tk.Button(self.root, text="Take Quiz", command=self.open_taker).pack(pady=10)
+    def show_question(self):
+        for widget in self.window.winfo_children():
+            widget.destroy()
 
-        self.root.mainloop()
+        if self.current_index < len(self.questions):
+            question_text, choices, correct_answer = self.questions[self.current_index]
+            tk.Label(self.window, text=f"Q{self.current_index + 1}: {question_text}",
+                     font=("Arial", 14), wraplength=400, bg="#f0f0f0").pack(pady=10)
 
-    def open_creator(self):
-        QuizCreatorWindow(self.root)
+            self.answer_var = tk.StringVar(value="")
+            for key in ['a', 'b', 'c', 'd']:
+                tk.Radiobutton(self.window, text=f"{key}. {choices[key]}", variable=self.answer_var, value=key,
+                               anchor="w", justify="left", bg="#f0f0f0", font=("Arial", 12)).pack(fill="x", padx=20, pady=2)
 
-    def open_taker(self):
-        pass
+            self.styled_button(self.window, "Submit", lambda: self.submit_answer(correct_answer)).pack(pady=10)
+        else:
+            tk.Label(self.window, text="Quiz Complete!", font=("Arial", 16), bg="#f0f0f0").pack(pady=20)
+            tk.Label(self.window, text=f"Your Score: {self.score} out of {len(self.questions)}",
+                     font=("Arial", 14), bg="#f0f0f0").pack()
+            self.styled_button(self.window, "Back to Menu", self.window.destroy, bg="#f44336").pack(pady=10)
 
-if __name__ == "__main__":
-    MainWindow()
+    def submit_answer(self, correct_answer):
+        selected = self.answer_var.get()
+        if not selected:
+            messagebox.showwarning("No Answer", "Please select an answer.")
+            return
+
+        if selected == correct_answer:
+            self.score += 1
+            messagebox.showinfo("Result", "Correct!")
+        else:
+            messagebox.showerror("Result", f"Wrong! Correct answer was: {correct_answer}")
+
+        self.current_index += 1
+        self.window.after(500, self.show_question)
